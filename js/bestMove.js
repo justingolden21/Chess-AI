@@ -7,7 +7,8 @@ const calculateBestMove = function() {
     let bestMove = -9999;
     let bestMoveFound;
 
-    for(let i = 0; i < possibleNextMoves.length; i++) {
+    const numPossibleMoves = possibleNextMoves.length;
+    for(let i = 0; i < numPossibleMoves; i++) {
     	console.timeLog('calc move');
         let possibleNextMove = possibleNextMoves[i];
         game.move(possibleNextMove);
@@ -29,7 +30,7 @@ const minimax = function (depth, alpha, beta, isMaximisingPlayer) {
     }
 
     let possibleNextMoves = game.moves();
-    let numPossibleMoves = possibleNextMoves.length;
+    const numPossibleMoves = possibleNextMoves.length;
     let bestMove;
 
     if (isMaximisingPlayer) {
@@ -68,6 +69,7 @@ const evaluateBoard = function (board) {
     let totalEvaluation = 0;
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
+            if(board[i][j]===null) continue;
             totalEvaluation += getPieceValue(board[i][j], i, j);
         }
     }
@@ -159,17 +161,8 @@ const blackKingEval = reverseArray(whiteKingEval);
 
 
 const getPieceValue = function (piece, x, y) {
-    if (piece === null) {
-        return 0;
-    }
-
     let absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
-
-    if(piece.color === 'w'){
-    	return absoluteValue;
-    } else {
-    	return -absoluteValue;
-    }
+    return piece.color === 'w' ? absoluteValue : -absoluteValue;
 };
 
 
