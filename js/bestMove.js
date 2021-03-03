@@ -1,36 +1,40 @@
 // uses the minimax algorithm with alpha beta pruning to caculate the best move
-var calculateBestMove = function() {
+const calculateBestMove = function() {
 
-    var possibleNextMoves = game.moves();
-    var bestMove = -9999;
-    var bestMoveFound;
+	console.time('calc move');
 
-    for(var i = 0; i < possibleNextMoves.length; i++) {
-        var possibleNextMove = possibleNextMoves[i]
+    let possibleNextMoves = game.moves();
+    let bestMove = -9999;
+    let bestMoveFound;
+
+    for(let i = 0; i < possibleNextMoves.length; i++) {
+    	console.timeLog('calc move');
+        let possibleNextMove = possibleNextMoves[i];
         game.move(possibleNextMove);
-        var value = minimax(minimaxDepth, -10000, 10000, false);
+        let value = minimax(minimaxDepth, -10000, 10000, false);
         game.undo();
         if(value >= bestMove) {
             bestMove = value;
             bestMoveFound = possibleNextMove;
         }
     }
+    console.timeEnd('calc move');
     return bestMoveFound;
 };
 
-
-// minimax with alhpha-beta pruning and search depth d = 3 levels
-var minimax = function (depth, alpha, beta, isMaximisingPlayer) {
+// minimax with alpha-beta pruning and search depth d = 3 levels
+const minimax = function (depth, alpha, beta, isMaximisingPlayer) {
     if (depth === 0) {
         return -evaluateBoard(game.board());
     }
 
-    var possibleNextMoves = game.moves();
-    var numPossibleMoves = possibleNextMoves.length
+    let possibleNextMoves = game.moves();
+    let numPossibleMoves = possibleNextMoves.length;
+    let bestMove;
 
     if (isMaximisingPlayer) {
-        var bestMove = -9999;
-        for (var i = 0; i < numPossibleMoves; i++) {
+        bestMove = -9999;
+        for (let i = 0; i < numPossibleMoves; i++) {
             game.move(possibleNextMoves[i]);
             bestMove = Math.max(bestMove, minimax(depth - 1, alpha, beta, !isMaximisingPlayer));
             game.undo();
@@ -41,8 +45,8 @@ var minimax = function (depth, alpha, beta, isMaximisingPlayer) {
         }
 
     } else {
-        var bestMove = 9999;
-        for (var i = 0; i < numPossibleMoves; i++) {
+        bestMove = 9999;
+        for (let i = 0; i < numPossibleMoves; i++) {
             game.move(possibleNextMoves[i]);
             bestMove = Math.min(bestMove, minimax(depth - 1, alpha, beta, !isMaximisingPlayer));
             game.undo();
@@ -58,22 +62,25 @@ var minimax = function (depth, alpha, beta, isMaximisingPlayer) {
 
 
 // the evaluation function for minimax
-var evaluateBoard = function (board) {
-    var totalEvaluation = 0;
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            totalEvaluation = totalEvaluation + getPieceValue(board[i][j], i, j);
+const evaluateBoard = function (board) {
+	// console.log('evaluate board');
+	// console.time('evaluate board');
+    let totalEvaluation = 0;
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            totalEvaluation += getPieceValue(board[i][j], i, j);
         }
     }
+	// console.timeEnd('evaluate board');
     return totalEvaluation;
 };
 
 
-var reverseArray = function(array) {
+const reverseArray = function(array) {
 	return array.slice().reverse();
 };
 
-var whitePawnEval =
+const whitePawnEval =
     [
         [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
         [5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
@@ -85,9 +92,9 @@ var whitePawnEval =
         [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
     ];
 
-var blackPawnEval = reverseArray(whitePawnEval);
+const blackPawnEval = reverseArray(whitePawnEval);
 
-var knightEval =
+const knightEval =
     [
         [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
         [-4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0],
@@ -99,7 +106,7 @@ var knightEval =
         [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
     ];
 
-var whiteBishopEval = [
+const whiteBishopEval = [
     [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
     [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
     [ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0],
@@ -110,9 +117,9 @@ var whiteBishopEval = [
     [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
 ];
 
-var blackBishopEval = reverseArray(whiteBishopEval);
+const blackBishopEval = reverseArray(whiteBishopEval);
 
-var whiteRookEval = [
+const whiteRookEval = [
     [  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
     [  0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5],
     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
@@ -123,9 +130,9 @@ var whiteRookEval = [
     [  0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0]
 ];
 
-var blackRookEval = reverseArray(whiteRookEval);
+const blackRookEval = reverseArray(whiteRookEval);
 
-var evalQueen = [
+const evalQueen = [
     [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
     [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
     [ -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
@@ -136,7 +143,7 @@ var evalQueen = [
     [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
 ];
 
-var whiteKingEval = [
+const whiteKingEval = [
 
     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
@@ -148,15 +155,15 @@ var whiteKingEval = [
     [  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
 ];
 
-var blackKingEval = reverseArray(whiteKingEval);
+const blackKingEval = reverseArray(whiteKingEval);
 
 
-var getPieceValue = function (piece, x, y) {
+const getPieceValue = function (piece, x, y) {
     if (piece === null) {
         return 0;
     }
 
-    var absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
+    let absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
 
     if(piece.color === 'w'){
     	return absoluteValue;
@@ -166,18 +173,19 @@ var getPieceValue = function (piece, x, y) {
 };
 
 
-var getAbsoluteValue = function (piece, isWhite, x ,y) {
-    if (piece.type === 'p') {
+const getAbsoluteValue = function (piece, isWhite, x ,y) {
+	const t = piece.type;
+    if (t === 'p') {
         return 10 + ( isWhite ? whitePawnEval[y][x] : blackPawnEval[y][x] );
-    } else if (piece.type === 'r') {
+    } else if (t === 'r') {
         return 50 + ( isWhite ? whiteRookEval[y][x] : blackRookEval[y][x] );
-    } else if (piece.type === 'n') {
+    } else if (t === 'n') {
         return 30 + knightEval[y][x];
-    } else if (piece.type === 'b') {
+    } else if (t === 'b') {
         return 30 + ( isWhite ? whiteBishopEval[y][x] : blackBishopEval[y][x] );
-    } else if (piece.type === 'q') {
+    } else if (t === 'q') {
         return 90 + evalQueen[y][x];
-    } else if (piece.type === 'k') {
+    } else if (t === 'k') {
         return 900 + ( isWhite ? whiteKingEval[y][x] : blackKingEval[y][x] );
     }
 };
